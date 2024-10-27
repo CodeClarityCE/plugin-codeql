@@ -1,0 +1,26 @@
+services:
+  plugin-codeql:
+    build:
+      context: ../../backend
+      dockerfile: plugins/codeql/.cloud/docker/Dockerfile
+      target: plugin-dev
+      args:
+        - PLUGINNAME=codeql
+    image: ceherzog/codeql-dev:latest
+    restart: always
+    volumes:
+      - ../../backend:/codeclarity
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_started
+      pg_bouncer:
+        condition: service_started
+      adminer:
+        condition: service_started
+    env_file:
+      - ../../.cloud/env/.env.dev
+
+volumes:
+  projects:

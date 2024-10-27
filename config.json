@@ -1,0 +1,16 @@
+{
+    "name": "codeql",
+    "version": "v0.0.2",
+    "image_name": "ceherzog/plugin-codeql",
+    "image_version": "0.0.2",
+    "depends_on": [],
+    "description": "A CodeClarity plugin",
+    "config": {
+        "aConfigAttribute": {
+            "name": "Name",
+            "type": "Array<string>",
+            "description": "Description of the attribute",
+            "required": true
+        }
+    }
+}
