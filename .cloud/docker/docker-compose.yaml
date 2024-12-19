@@ -6,7 +6,7 @@ services:
       target: plugin-dev
       args:
         - PLUGINNAME=codeql
-    image: ceherzog/codeql-dev:latest
+    image: codeclarityce/codeql-dev:latest
     restart: always
     volumes:
       - ../../backend:/codeclarity

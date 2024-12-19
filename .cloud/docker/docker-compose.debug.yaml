@@ -3,6 +3,6 @@ services:
     # For dev we keep the golang container and install devtools
     build:
       target: plugin-debug
-    image: ceherzog/codeql-debug:latest
+    image: codeclarityce/codeql-debug:latest
     ports:
       - 40000:40000
