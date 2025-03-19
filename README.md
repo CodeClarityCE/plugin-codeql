@@ -20,7 +20,6 @@ Adapt the ```config.json```file by giving a name to your plugin.
     "name": "template-plugin", // change the name here
     "version": "v0.0.0",
     "image_name": "codeclarityce/plugin-template-plugin", // change the name here with codeclarity/plugin- before your name
-    "image_version": "0.0.0",
     "depends_on": [],
     "description": "A CodeClarity plugin",
     "config": {
