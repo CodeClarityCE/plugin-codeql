@@ -5,9 +5,9 @@ go 1.23.0
 toolchain go1.24.1
 
 require (
-	github.com/CodeClarityCE/plugin-sca-vuln-finder v0.0.2-alpha
+	github.com/CodeClarityCE/plugin-sca-vuln-finder v0.0.3-alpha
 	github.com/CodeClarityCE/utility-amqp-helper v0.0.1-alpha
-	github.com/CodeClarityCE/utility-dbhelper v0.0.1-alpha
+	github.com/CodeClarityCE/utility-dbhelper v0.0.2-alpha
 	github.com/CodeClarityCE/utility-types v0.0.3-alpha
 	github.com/google/uuid v1.6.0
 	github.com/uptrace/bun v1.2.11
@@ -16,7 +16,7 @@ require (
 )
 
 require (
-	github.com/CodeClarityCE/plugin-sbom-javascript v0.0.2-alpha // indirect
+	github.com/CodeClarityCE/plugin-sbom-javascript v0.0.5-alpha // indirect
 	github.com/CodeClarityCE/utility-node-semver v0.0.1-alpha // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
