@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	vulnerabilityFinder "github.com/CodeClarityCE/plugin-sca-vuln-finder/src/types"
+	output "github.com/CodeClarityCE/plugin-codeql/src/types"
 	amqp_helper "github.com/CodeClarityCE/utility-amqp-helper"
 	dbhelper "github.com/CodeClarityCE/utility-dbhelper/helper"
 	types_amqp "github.com/CodeClarityCE/utility-types/amqp"
@@ -91,7 +91,7 @@ func startAnalysis(args Arguments, dispatcherMessage types_amqp.DispatcherPlugin
 		}
 	}
 
-	var vulnOutput vulnerabilityFinder.Output
+	var vulnOutput output.Output
 	// start := time.Now()
 
 	res := codeclarity.Result{
@@ -115,7 +115,7 @@ func startAnalysis(args Arguments, dispatcherMessage types_amqp.DispatcherPlugin
 	// }
 
 	vuln_result := codeclarity.Result{
-		Result:     vulnerabilityFinder.ConvertOutputToMap(vulnOutput),
+		Result:     output.ConvertOutputToMap(vulnOutput),
 		AnalysisId: dispatcherMessage.AnalysisId,
 		Plugin:     config.Name,
 	}

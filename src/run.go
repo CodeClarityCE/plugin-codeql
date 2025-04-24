@@ -2,23 +2,36 @@ package codeclarity
 
 import (
 	"log"
-	"os/exec"
+	"time"
+
+	outputGenerator "github.com/CodeClarityCE/plugin-codeql/src/outputGenerator"
+	output "github.com/CodeClarityCE/plugin-codeql/src/types"
+	exceptionManager "github.com/CodeClarityCE/utility-types/exceptions"
+	"github.com/uptrace/bun"
 )
 
 // Entrypoint for the plugin
-func Start() any {
+func Start(knowledge_db *bun.DB, start time.Time) output.Output {
 	// Start the plugin
 	log.Println("Starting plugin...")
 
-	// Run the command
-	cmd := exec.Command("codeql", "database", "create", "test", "--overwrite", "--language=javascript", "--source-root=/private/10242/10798/main")
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Println("Failed to create CodeQL database:", err)
-		return err.Error()
+	// In case language is not supported return an error
+	if false {
+		exceptionManager.AddError("", exceptionManager.UNSUPPORTED_LANGUAGE_REQUESTED, "", exceptionManager.UNSUPPORTED_LANGUAGE_REQUESTED)
+		return outputGenerator.FailureOutput(output.AnalysisInfo{}, start)
 	}
 
-	log.Println("CodeQL database created successfully:", string(output))
+	// TODO perform analysis and fill this object
+	// You can adapt its type your needs
+	data := map[string]output.WorkspaceInfo{
+		".": {
+			CVEs: []string{},
+		},
+	}
 
-	return "Hello, World!"
+	// Generate license stats
+	analysisStats := outputGenerator.GenerateAnalysisStats(data)
+
+	// Return the analysis results
+	return outputGenerator.SuccessOutput(data, analysisStats, output.AnalysisInfo{}, start)
 }
