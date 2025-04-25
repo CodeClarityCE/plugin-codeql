@@ -6,7 +6,7 @@ import (
 )
 
 type WorkspaceInfo struct {
-	CVEs []string
+	Results []Result `json:"results"`
 }
 
 type AnalysisStatus string
@@ -21,16 +21,12 @@ type AnalysisStats struct {
 }
 
 type AnalysisInfo struct {
-	Status                   codeclarity.AnalysisStatus `json:"status"`
-	Errors                   []exceptions.Error         `json:"errors"`
-	AnalysisStartTime        string                     `json:"analysis_start_time"`
-	AnalysisEndTime          string                     `json:"analysis_end_time"`
-	AnalysisDeltaTime        float64                    `json:"analysis_delta_time"`
-	VersionSeperator         string                     `json:"version_seperator"`
-	ImportPathSeperator      string                     `json:"import_path_seperator"`
-	DefaultWorkspaceName     string                     `json:"default_workspace_name"`
-	SelfManagedWorkspaceName string                     `json:"self_managed_workspace_name"`
-	AnalysisStats            AnalysisStats              `json:"stats"`
+	Status            codeclarity.AnalysisStatus `json:"status"`
+	Errors            []exceptions.Error         `json:"errors"`
+	AnalysisStartTime string                     `json:"analysis_start_time"`
+	AnalysisEndTime   string                     `json:"analysis_end_time"`
+	AnalysisDeltaTime float64                    `json:"analysis_delta_time"`
+	AnalysisStats     AnalysisStats              `json:"stats"`
 }
 
 type Output struct {
@@ -47,7 +43,7 @@ func ConvertOutputToMap(output Output) map[string]interface{} {
 	workspaces := make(map[string]interface{})
 	for key, value := range output.WorkSpaces {
 		workspace := make(map[string]interface{})
-		workspace["cves"] = value.CVEs
+		workspace["results"] = value.Results
 		workspaces[key] = workspace
 	}
 	result["workspaces"] = workspaces
@@ -59,10 +55,6 @@ func ConvertOutputToMap(output Output) map[string]interface{} {
 	analysisInfo["analysis_start_time"] = output.AnalysisInfo.AnalysisStartTime
 	analysisInfo["analysis_end_time"] = output.AnalysisInfo.AnalysisEndTime
 	analysisInfo["analysis_delta_time"] = output.AnalysisInfo.AnalysisDeltaTime
-	analysisInfo["version_seperator"] = output.AnalysisInfo.VersionSeperator
-	analysisInfo["import_path_seperator"] = output.AnalysisInfo.ImportPathSeperator
-	analysisInfo["default_workspace_name"] = output.AnalysisInfo.DefaultWorkspaceName
-	analysisInfo["self_managed_workspace_name"] = output.AnalysisInfo.SelfManagedWorkspaceName
 	analysisInfo["stats"] = output.AnalysisInfo.AnalysisStats
 	result["analysis_info"] = analysisInfo
 

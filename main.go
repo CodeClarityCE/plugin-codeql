@@ -5,14 +5,15 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"time"
 
+	plugin "github.com/CodeClarityCE/plugin-codeql/src"
 	output "github.com/CodeClarityCE/plugin-codeql/src/types"
 	amqp_helper "github.com/CodeClarityCE/utility-amqp-helper"
 	dbhelper "github.com/CodeClarityCE/utility-dbhelper/helper"
 	types_amqp "github.com/CodeClarityCE/utility-types/amqp"
 	codeclarity "github.com/CodeClarityCE/utility-types/codeclarity_db"
-	plugin "github.com/CodeClarityCE/utility-types/plugin_db"
-	"github.com/google/uuid"
+	plugin_db "github.com/CodeClarityCE/utility-types/plugin_db"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
@@ -74,52 +75,27 @@ func main() {
 	amqp_helper.Listen("dispatcher_"+config.Name, callback, args, config)
 }
 
-func startAnalysis(args Arguments, dispatcherMessage types_amqp.DispatcherPluginMessage, config plugin.Plugin, analysis_document codeclarity.Analysis) (map[string]any, codeclarity.AnalysisStatus, error) {
+func startAnalysis(args Arguments, dispatcherMessage types_amqp.DispatcherPluginMessage, config plugin_db.Plugin, analysis_document codeclarity.Analysis) (map[string]any, codeclarity.AnalysisStatus, error) {
+	// Get analysis config
+	messageData := analysis_document.Config[config.Name].(map[string]any)
+
+	// GET download path from ENV
+	path := os.Getenv("DOWNLOAD_PATH")
+
+	// Destination folder
+	// destination := fmt.Sprintf("%s/%s/%s", path, organization, analysis.Commit)
 	// Prepare the arguments for the plugin
-	// Get previous stage
-	analysis_stage := analysis_document.Stage - 1
-	// Get sbomKey from previous stage
-	sbomKey := uuid.UUID{}
-	for _, step := range analysis_document.Steps[analysis_stage] {
-		if step.Name == "js-sbom" {
-			sbomKeyUUID, err := uuid.Parse(step.Result["sbomKey"].(string))
-			if err != nil {
-				panic(err)
-			}
-			sbomKey = sbomKeyUUID
-			break
-		}
-	}
+	project := path + "/" + messageData["project"].(string)
 
-	var vulnOutput output.Output
-	// start := time.Now()
+	// Start the plugin
+	out := plugin.Start(project, time.Now())
 
-	res := codeclarity.Result{
-		Id: sbomKey,
-	}
-	err := args.codeclarity.NewSelect().Model(&res).Where("id = ?", sbomKey).Scan(context.Background())
-	if err != nil {
-		panic(err)
-	}
-	// sbom := sbom.Output{}
-	// err = json.Unmarshal(res.Result.([]byte), &sbom)
-	// if err != nil {
-	// 	exceptionManager.AddError(
-	// 		"", exceptions.GENERIC_ERROR,
-	// 		fmt.Sprintf("Error when reading sbom output: %s", err), exceptions.FAILED_TO_READ_PREVIOUS_STAGE_OUTPUT,
-	// 	)
-	// 	// return outputGenerator.FailureOutput(nil, start)
-	// 	vulnOutput = outputGenerator.FailureOutput(sbom.AnalysisInfo, start)
-	// } else {
-	// 	vulnOutput = vulnerabilities.Start(sbom, "JS", start, args.knowledge)
-	// }
-
-	vuln_result := codeclarity.Result{
-		Result:     output.ConvertOutputToMap(vulnOutput),
+	result := codeclarity.Result{
+		Result:     output.ConvertOutputToMap(out),
 		AnalysisId: dispatcherMessage.AnalysisId,
 		Plugin:     config.Name,
 	}
-	_, err = args.codeclarity.NewInsert().Model(&vuln_result).Exec(context.Background())
+	_, err := args.codeclarity.NewInsert().Model(&result).Exec(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -127,9 +103,9 @@ func startAnalysis(args Arguments, dispatcherMessage types_amqp.DispatcherPlugin
 	// Prepare the result to store in step
 	// In this case we only store the sbomKey
 	// The other plugins will use this key to get the sbom
-	result := make(map[string]any)
-	result["vulnKey"] = vuln_result.Id
+	res := make(map[string]any)
+	res["sbomKey"] = result.Id
 
 	// The output is always a map[string]any
-	return result, vulnOutput.AnalysisInfo.Status, nil
+	return res, out.AnalysisInfo.Status, nil
 }

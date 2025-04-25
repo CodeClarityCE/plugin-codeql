@@ -16,6 +16,7 @@ build-prod: ## Builds the prod Docker images
 	-f .cloud/docker/Dockerfile \
 	--target plugin \
 	--build-arg PLUGINNAME=$(NAME) \
+	--platform linux/amd64 \
 	--tag $(REPOSITORY):latest \
 	.
 	

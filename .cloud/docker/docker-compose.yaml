@@ -7,9 +7,11 @@ services:
       args:
         - PLUGINNAME=codeql
     image: codeclarityce/codeql-dev:latest
+    platform: linux/amd64
     restart: always
     volumes:
       - ../../backend:/codeclarity
+      - ../../private:/private
     depends_on:
       rabbitmq:
         condition: service_healthy

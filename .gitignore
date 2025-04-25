@@ -26,3 +26,5 @@ test
 .netrc
 .cloud/codeql
 .cloud/node
+
+codeql
