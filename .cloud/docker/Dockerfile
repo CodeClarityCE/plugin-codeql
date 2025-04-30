@@ -64,8 +64,8 @@ RUN apt-get install -y zstd nodejs curl
 RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/*
 
-RUN groupadd -g 1000 ${USERNAME}
-RUN adduser --uid 1000 -gid 1000 ${USERNAME}
+RUN groupadd -g 1001 ${USERNAME}
+RUN adduser --uid 1001 -gid 1001 ${USERNAME}
 USER ${USERNAME}
 
 RUN mkdir /home/${USERNAME}/bin
