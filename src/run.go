@@ -13,7 +13,7 @@ import (
 )
 
 // Entrypoint for the plugin
-func Start(project_path string, start time.Time) output.Output {
+func Start(project_path string, language string, start time.Time) output.Output {
 	// Start the plugin
 	log.Println("Starting plugin...")
 
@@ -23,10 +23,18 @@ func Start(project_path string, start time.Time) output.Output {
 		return outputGenerator.FailureOutput(output.AnalysisInfo{}, start)
 	}
 
+	if language == "js" || language == "ts" || language == "javascript" || language == "typescript" || language == "javascript-typescript" {
+		language = "javascript-typescript"
+	} else if language == "go" || language == "golang" {
+		language = "go"
+	} else if language == "python" || language == "py" {
+		language = "python"
+	}
+
 	// Execute the command and capture output
 	// Note: In a real implementation, you would use exec.Command to run the command
 	// and handle errors appropriately. This is a placeholder for demonstration purposes.
-	databasePath := project_path + "/../javascript-database"
+	databasePath := project_path + "/../project-database"
 	if _, err := os.Stat(databasePath); err == nil {
 		log.Printf("Database exists at %s, deleting...", databasePath)
 		cmd := exec.Command("rm", "-rf", databasePath)
@@ -40,7 +48,7 @@ func Start(project_path string, start time.Time) output.Output {
 	} else {
 		log.Printf("Database does not exist at %s", databasePath)
 	}
-	cmd := exec.Command("codeql", "database", "create", "--language=javascript-typescript", "--source-root", project_path, project_path+"/../javascript-database")
+	cmd := exec.Command("codeql", "database", "create", "--language="+language, "--source-root", project_path, project_path+"/../project-database")
 	_, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Printf("Error creating database: %v", err)
@@ -49,7 +57,7 @@ func Start(project_path string, start time.Time) output.Output {
 	}
 	log.Println("Database created successfully.")
 
-	cmd = exec.Command("codeql", "database", "analyze", project_path+"/../javascript-database", "--format=sarif-latest", "--output="+project_path+"/../out.sarif")
+	cmd = exec.Command("codeql", "database", "analyze", project_path+"/../project-database", "--format=sarif-latest", "--output="+project_path+"/../out.sarif")
 	_, err = cmd.CombinedOutput()
 	if err != nil {
 		log.Printf("Error analyzing database: %v", err)

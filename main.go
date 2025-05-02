@@ -86,9 +86,10 @@ func startAnalysis(args Arguments, dispatcherMessage types_amqp.DispatcherPlugin
 	// destination := fmt.Sprintf("%s/%s/%s", path, organization, analysis.Commit)
 	// Prepare the arguments for the plugin
 	project := path + "/" + messageData["project"].(string)
+	language := messageData["language"].(string)
 
 	// Start the plugin
-	out := plugin.Start(project, time.Now())
+	out := plugin.Start(project, language, time.Now())
 
 	result := codeclarity.Result{
 		Result:     output.ConvertOutputToMap(out),
