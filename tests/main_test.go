@@ -9,7 +9,7 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	out := plugin.Start("../../js-sbom/tests/npmv1", time.Now())
+	out := plugin.Start("../../js-sbom/tests/npmv1", "js", time.Now())
 
 	// Assert the expected values
 	assert.NotNil(t, out)
