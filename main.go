@@ -104,7 +104,7 @@ func startAnalysis(args Arguments, dispatcherMessage types_amqp.DispatcherPlugin
 	// In this case we only store the sbomKey
 	// The other plugins will use this key to get the sbom
 	res := make(map[string]any)
-	res["sbomKey"] = result.Id
+	res["codeQLKey"] = result.Id
 
 	// The output is always a map[string]any
 	return res, out.AnalysisInfo.Status, nil
