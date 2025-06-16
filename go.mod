@@ -3,13 +3,13 @@ module github.com/CodeClarityCE/plugin-codeql
 go 1.24.3
 
 require (
-	github.com/CodeClarityCE/utility-amqp-helper v0.0.3-alpha
-	github.com/CodeClarityCE/utility-dbhelper v0.0.5-alpha
-	github.com/CodeClarityCE/utility-types v0.0.6-alpha
+	github.com/CodeClarityCE/utility-amqp-helper v0.0.4-alpha
+	github.com/CodeClarityCE/utility-dbhelper v0.0.6-alpha
+	github.com/CodeClarityCE/utility-types v0.0.7-alpha
 	github.com/stretchr/testify v1.10.0
-	github.com/uptrace/bun v1.2.11
-	github.com/uptrace/bun/dialect/pgdialect v1.2.11
-	github.com/uptrace/bun/driver/pgdriver v1.2.11
+	github.com/uptrace/bun v1.2.13
+	github.com/uptrace/bun/dialect/pgdialect v1.2.13
+	github.com/uptrace/bun/driver/pgdriver v1.2.13
 )
 
 require (
@@ -27,7 +27,7 @@ require (
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	go.opentelemetry.io/otel v1.36.0 // indirect
 	go.opentelemetry.io/otel/trace v1.36.0 // indirect
-	golang.org/x/crypto v0.38.0 // indirect
+	golang.org/x/crypto v0.39.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
