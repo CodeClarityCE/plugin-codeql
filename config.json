@@ -1,6 +1,6 @@
 {
     "name": "codeql",
-    "version": "v0.0.11-alpha",
+    "version": "v0.0.12-alpha",
     "image_name": "codeclarityce/plugin-codeql",
     "depends_on": [],
     "description": "A CodeClarity plugin",
