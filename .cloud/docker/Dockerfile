@@ -65,7 +65,7 @@ RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 1001 ${USERNAME}
-RUN adduser --uid 1001 -gid 1001 ${USERNAME}
+RUN useradd --uid 1001 --gid 1001 --create-home ${USERNAME}
 USER ${USERNAME}
 
 RUN mkdir /home/${USERNAME}/bin
