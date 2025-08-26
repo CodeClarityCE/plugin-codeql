@@ -8,8 +8,8 @@ import (
 
 	plugin "github.com/CodeClarityCE/plugin-codeql/src"
 	output "github.com/CodeClarityCE/plugin-codeql/src/types"
-	"github.com/CodeClarityCE/utility-types/boilerplates"
 	types_amqp "github.com/CodeClarityCE/utility-types/amqp"
+	"github.com/CodeClarityCE/utility-types/boilerplates"
 	codeclarity "github.com/CodeClarityCE/utility-types/codeclarity_db"
 	plugin_db "github.com/CodeClarityCE/utility-types/plugin_db"
 )
