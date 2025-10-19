@@ -5,7 +5,7 @@ ARG USERNAME=codeclarity
 ARG PLUGINNAME=plugin
 
 # DEV IMAGE
-FROM golang:1.24.5 AS plugin-dev
+FROM golang:1.25.3 AS plugin-dev
 ARG KIND
 ARG PLUGINNAME
 ENV PATH="$PATH:/codeql"
@@ -17,11 +17,11 @@ RUN curl -L https://github.com/github/codeql-action/releases/download/codeql-bun
 RUN tar --zstd -xvf codeql-bundle.tar.zst
 RUN mv codeql /codeql
 RUN rm codeql-bundle.tar.zst
-RUN go install github.com/air-verse/air@latest
+RUN go install github.com/air-verse/air@v1.63.0
 CMD ["air", "-c", ".air.toml"]
 
 # DEBUG IMAGE
-FROM golang:1.24.5 AS plugin-debug
+FROM golang:1.25.3 AS plugin-debug
 ARG KIND
 ARG PLUGINNAME
 ENV PATH="$PATH:/codeql"
@@ -41,7 +41,7 @@ CMD ["/go/bin/dlv", "debug", ".", "--headless", "--listen=:40000", "--accept-mul
 
 
 # BUILD IMAGE
-FROM golang:1.24.5 AS plugin-build
+FROM golang:1.25.3 AS plugin-build
 ARG KIND
 ARG PLUGINNAME
 COPY . /codeclarity/${KIND}/${PLUGINNAME}
