@@ -44,10 +44,20 @@ CMD ["/go/bin/dlv", "debug", ".", "--headless", "--listen=:40000", "--accept-mul
 FROM golang:1.26.0 AS plugin-build
 ARG KIND
 ARG PLUGINNAME
-COPY . /codeclarity/${KIND}/${PLUGINNAME}
+ARG DIRNAME=
+COPY . /codeclarity_src
+RUN DIR="${DIRNAME:-${PLUGINNAME}}" && \
+    if [ -d "/codeclarity_src/${KIND}/$DIR" ]; then \
+      mv /codeclarity_src /codeclarity; \
+      if [ "$DIR" != "${PLUGINNAME}" ]; then \
+        ln -s "$DIR" "/codeclarity/${KIND}/${PLUGINNAME}"; \
+      fi; \
+    else \
+      mkdir -p /codeclarity/${KIND} && \
+      mv /codeclarity_src /codeclarity/${KIND}/${PLUGINNAME} && \
+      rm -f /codeclarity/${KIND}/${PLUGINNAME}/go.work; \
+    fi
 WORKDIR /codeclarity/${KIND}/${PLUGINNAME}
-ADD .cloud/docker/config/* /root
-RUN rm go.work
 RUN apt update -y && apt upgrade -y
 RUN apt install git
 RUN [ "go", "build", "-o", "plugin" ]
