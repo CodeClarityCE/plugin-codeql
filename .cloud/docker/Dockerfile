@@ -5,7 +5,7 @@ ARG USERNAME=codeclarity
 ARG PLUGINNAME=plugin
 
 # DEV IMAGE
-FROM golang:1.25.7 AS plugin-dev
+FROM golang:1.27.3@sha256:2920bb124f1a2e12a1d39f0cab756ae0068441ee1da7655dec7f5e374944095b AS plugin-dev
 ARG KIND
 ARG PLUGINNAME
 ENV PATH="$PATH:/codeql"
@@ -17,11 +17,11 @@ RUN curl -L https://github.com/github/codeql-action/releases/download/codeql-bun
 RUN tar --zstd -xvf codeql-bundle.tar.zst
 RUN mv codeql /codeql
 RUN rm codeql-bundle.tar.zst
-RUN go install github.com/air-verse/air@v1.63.0
+RUN go install github.com/air-verse/air@v1.64.5
 CMD ["air", "-c", ".air.toml"]
 
 # DEBUG IMAGE
-FROM golang:1.25.7 AS plugin-debug
+FROM golang:1.27.3@sha256:2920bb124f1a2e12a1d39f0cab756ae0068441ee1da7655dec7f5e374944095b AS plugin-debug
 ARG KIND
 ARG PLUGINNAME
 ENV PATH="$PATH:/codeql"
@@ -41,19 +41,29 @@ CMD ["/go/bin/dlv", "debug", ".", "--headless", "--listen=:40000", "--accept-mul
 
 
 # BUILD IMAGE
-FROM golang:1.25.7 AS plugin-build
+FROM golang:1.27.3@sha256:2920bb124f1a2e12a1d39f0cab756ae0068441ee1da7655dec7f5e374944095b AS plugin-build
 ARG KIND
 ARG PLUGINNAME
-COPY . /codeclarity/${KIND}/${PLUGINNAME}
+ARG DIRNAME=
+COPY . /codeclarity_src
+RUN DIR="${DIRNAME:-${PLUGINNAME}}" && \
+    if [ -d "/codeclarity_src/${KIND}/$DIR" ]; then \
+      mv /codeclarity_src /codeclarity; \
+      if [ "$DIR" != "${PLUGINNAME}" ]; then \
+        ln -s "$DIR" "/codeclarity/${KIND}/${PLUGINNAME}"; \
+      fi; \
+    else \
+      mkdir -p /codeclarity/${KIND} && \
+      mv /codeclarity_src /codeclarity/${KIND}/${PLUGINNAME} && \
+      rm -f /codeclarity/${KIND}/${PLUGINNAME}/go.work; \
+    fi
 WORKDIR /codeclarity/${KIND}/${PLUGINNAME}
-ADD .cloud/docker/config/* /root
-RUN rm go.work
 RUN apt update -y && apt upgrade -y
 RUN apt install git
 RUN [ "go", "build", "-o", "plugin" ]
 
 # PRODUCTION IMAGE
-FROM debian:stable-slim AS plugin
+FROM debian:trixie-slim@sha256:a99cfc517144bc59b1978475ec53b46ecabec7e43635402ee5b77cc54cd1b20a AS plugin
 ARG KIND
 ARG USERNAME
 ARG PLUGINNAME

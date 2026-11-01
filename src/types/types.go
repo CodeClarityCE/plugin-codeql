@@ -36,20 +36,20 @@ type Output struct {
 
 type AnalysisStatLicenseSeverityDist map[string]int
 
-func ConvertOutputToMap(output Output) map[string]interface{} {
-	result := make(map[string]interface{})
+func ConvertOutputToMap(output Output) map[string]any {
+	result := make(map[string]any)
 
 	// Convert WorkSpaces to map
-	workspaces := make(map[string]interface{})
+	workspaces := make(map[string]any)
 	for key, value := range output.WorkSpaces {
-		workspace := make(map[string]interface{})
+		workspace := make(map[string]any)
 		workspace["results"] = value.Results
 		workspaces[key] = workspace
 	}
 	result["workspaces"] = workspaces
 
 	// Convert AnalysisInfo to map
-	analysisInfo := make(map[string]interface{})
+	analysisInfo := make(map[string]any)
 	analysisInfo["status"] = output.AnalysisInfo.Status
 	analysisInfo["errors"] = output.AnalysisInfo.Errors
 	analysisInfo["analysis_start_time"] = output.AnalysisInfo.AnalysisStartTime
