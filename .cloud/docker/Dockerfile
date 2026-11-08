@@ -13,7 +13,7 @@ WORKDIR /codeclarity/${KIND}/${PLUGINNAME}
 ADD .cloud/docker/config/* /root
 RUN apt update -y && apt upgrade -y
 RUN apt install -y zstd nodejs
-RUN curl -L https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.21.1/codeql-bundle-linux64.tar.zst > codeql-bundle.tar.zst
+RUN curl -fL https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.21.1/codeql-bundle-linux64.tar.zst > codeql-bundle.tar.zst
 RUN tar --zstd -xvf codeql-bundle.tar.zst
 RUN mv codeql /codeql
 RUN rm codeql-bundle.tar.zst
@@ -29,7 +29,7 @@ ENV KIND=${KIND}
 ENV PLUGINNAME=${PLUGINNAME}
 RUN apt update -y && apt upgrade -y
 RUN apt install -y zstd nodejs
-RUN curl -L https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.21.1/codeql-bundle-linux64.tar.zst > codeql-bundle.tar.zst
+RUN curl -fL https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.21.1/codeql-bundle-linux64.tar.zst > codeql-bundle.tar.zst
 RUN tar --zstd -xvf codeql-bundle.tar.zst
 RUN mv codeql /codeql
 RUN rm codeql-bundle.tar.zst
@@ -80,7 +80,7 @@ USER ${USERNAME}
 
 RUN mkdir /home/${USERNAME}/bin
 WORKDIR /home/${USERNAME}/bin
-RUN curl -L https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.21.1/codeql-bundle-linux64.tar.zst > codeql-bundle.tar.zst
+RUN curl -fL https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.21.1/codeql-bundle-linux64.tar.zst > codeql-bundle.tar.zst
 RUN tar --zstd -xvf codeql-bundle.tar.zst
 RUN rm codeql-bundle.tar.zst
 ENV PATH="$PATH:/home/$USERNAME/bin/codeql"
