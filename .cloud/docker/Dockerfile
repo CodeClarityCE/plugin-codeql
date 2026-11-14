@@ -5,7 +5,7 @@ ARG USERNAME=codeclarity
 ARG PLUGINNAME=plugin
 
 # DEV IMAGE
-FROM golang:1.27.3@sha256:2920bb124f1a2e12a1d39f0cab756ae0068441ee1da7655dec7f5e374944095b AS plugin-dev
+FROM golang:1.27.4@sha256:5e8afd493a7124a8586e134d9b532731161d4b9becf9dee5a5956b107426f93d AS plugin-dev
 ARG KIND
 ARG PLUGINNAME
 ENV PATH="$PATH:/codeql"
@@ -13,7 +13,7 @@ WORKDIR /codeclarity/${KIND}/${PLUGINNAME}
 ADD .cloud/docker/config/* /root
 RUN apt update -y && apt upgrade -y
 RUN apt install -y zstd nodejs
-RUN curl -L https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.21.1/codeql-bundle-linux64.tar.zst > codeql-bundle.tar.zst
+RUN curl -fL https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.21.1/codeql-bundle-linux64.tar.zst > codeql-bundle.tar.zst
 RUN tar --zstd -xvf codeql-bundle.tar.zst
 RUN mv codeql /codeql
 RUN rm codeql-bundle.tar.zst
@@ -21,7 +21,7 @@ RUN go install github.com/air-verse/air@v1.64.5
 CMD ["air", "-c", ".air.toml"]
 
 # DEBUG IMAGE
-FROM golang:1.27.3@sha256:2920bb124f1a2e12a1d39f0cab756ae0068441ee1da7655dec7f5e374944095b AS plugin-debug
+FROM golang:1.27.4@sha256:5e8afd493a7124a8586e134d9b532731161d4b9becf9dee5a5956b107426f93d AS plugin-debug
 ARG KIND
 ARG PLUGINNAME
 ENV PATH="$PATH:/codeql"
@@ -29,7 +29,7 @@ ENV KIND=${KIND}
 ENV PLUGINNAME=${PLUGINNAME}
 RUN apt update -y && apt upgrade -y
 RUN apt install -y zstd nodejs
-RUN curl -L https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.21.1/codeql-bundle-linux64.tar.zst > codeql-bundle.tar.zst
+RUN curl -fL https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.21.1/codeql-bundle-linux64.tar.zst > codeql-bundle.tar.zst
 RUN tar --zstd -xvf codeql-bundle.tar.zst
 RUN mv codeql /codeql
 RUN rm codeql-bundle.tar.zst
@@ -41,7 +41,7 @@ CMD ["/go/bin/dlv", "debug", ".", "--headless", "--listen=:40000", "--accept-mul
 
 
 # BUILD IMAGE
-FROM golang:1.27.3@sha256:2920bb124f1a2e12a1d39f0cab756ae0068441ee1da7655dec7f5e374944095b AS plugin-build
+FROM golang:1.27.4@sha256:5e8afd493a7124a8586e134d9b532731161d4b9becf9dee5a5956b107426f93d AS plugin-build
 ARG KIND
 ARG PLUGINNAME
 ARG DIRNAME=
@@ -80,7 +80,7 @@ USER ${USERNAME}
 
 RUN mkdir /home/${USERNAME}/bin
 WORKDIR /home/${USERNAME}/bin
-RUN curl -L https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.21.1/codeql-bundle-linux64.tar.zst > codeql-bundle.tar.zst
+RUN curl -fL https://github.com/github/codeql-action/releases/download/codeql-bundle-v2.21.1/codeql-bundle-linux64.tar.zst > codeql-bundle.tar.zst
 RUN tar --zstd -xvf codeql-bundle.tar.zst
 RUN rm codeql-bundle.tar.zst
 ENV PATH="$PATH:/home/$USERNAME/bin/codeql"
