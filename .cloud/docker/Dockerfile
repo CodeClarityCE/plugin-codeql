@@ -33,7 +33,7 @@ RUN curl -fL https://github.com/github/codeql-action/releases/download/codeql-bu
 RUN tar --zstd -xvf codeql-bundle.tar.zst
 RUN mv codeql /codeql
 RUN rm codeql-bundle.tar.zst
-RUN go install github.com/go-delve/delve/cmd/dlv@latest
+RUN go install github.com/go-delve/delve/cmd/dlv@v1.27.2
 ADD .cloud/docker/config/* /root
 WORKDIR /codeclarity/${KIND}/${PLUGINNAME}
 CMD ["/go/bin/dlv", "debug", ".", "--headless", "--listen=:40000", "--accept-multiclient"]
