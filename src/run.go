@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"time"
 
 	outputGenerator "github.com/CodeClarityCE/plugin-codeql/src/outputGenerator"
@@ -23,11 +24,12 @@ func Start(project_path string, language string, start time.Time) output.Output 
 		return outputGenerator.FailureOutput(output.AnalysisInfo{}, start)
 	}
 
-	if language == "js" || language == "ts" || language == "javascript" || language == "typescript" || language == "javascript-typescript" {
+	switch language {
+	case "js", "ts", "javascript", "typescript", "javascript-typescript":
 		language = "javascript-typescript"
-	} else if language == "go" || language == "golang" {
+	case "go", "golang":
 		language = "go"
-	} else if language == "python" || language == "py" {
+	case "python", "py":
 		language = "python"
 	}
 
@@ -37,18 +39,16 @@ func Start(project_path string, language string, start time.Time) output.Output 
 	databasePath := project_path + "/../project-database"
 	if _, err := os.Stat(databasePath); err == nil {
 		log.Printf("Database exists at %s, deleting...", databasePath)
-		cmd := exec.Command("rm", "-rf", databasePath)
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			log.Printf("Error deleting database: %v, output: %s", err, string(out))
+		if err := os.RemoveAll(databasePath); err != nil {
+			log.Printf("Error deleting database: %v", err)
 			exceptionManager.AddError("", exceptionManager.GENERIC_ERROR, "", exceptionManager.GENERIC_ERROR)
 			return outputGenerator.FailureOutput(output.AnalysisInfo{}, start)
 		}
-		log.Printf("Database deleted successfully. Output: %s", string(out))
+		log.Printf("Database deleted successfully.")
 	} else {
 		log.Printf("Database does not exist at %s", databasePath)
 	}
-	cmd := exec.Command("codeql", "database", "create", "--language="+language, "--source-root", project_path, project_path+"/../project-database")
+	cmd := exec.Command("codeql", "database", "create", "--language="+language, "--source-root", project_path, project_path+"/../project-database") //nolint:gosec // G204: fixed binary on the project paths
 	_, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Printf("Error creating database: %v", err)
@@ -57,7 +57,7 @@ func Start(project_path string, language string, start time.Time) output.Output 
 	}
 	log.Println("Database created successfully.")
 
-	cmd = exec.Command("codeql", "database", "analyze", project_path+"/../project-database", "--format=sarif-latest", "--output="+project_path+"/../out.sarif")
+	cmd = exec.Command("codeql", "database", "analyze", project_path+"/../project-database", "--format=sarif-latest", "--output="+project_path+"/../out.sarif") //nolint:gosec // G204: fixed binary on the project paths
 	_, err = cmd.CombinedOutput()
 	if err != nil {
 		log.Printf("Error analyzing database: %v", err)
@@ -70,8 +70,8 @@ func Start(project_path string, language string, start time.Time) output.Output 
 	sarifPath := project_path + "/../out.sarif"
 	var codeQL output.CodeQL
 
-	// Read the SARIF file
-	sarifData, err := os.ReadFile(sarifPath)
+	// Read the SARIF file from the directory codeql wrote it to.
+	sarifData, err := readInDir(filepath.Dir(sarifPath), filepath.Base(sarifPath))
 	if err != nil {
 		log.Printf("Error reading SARIF file: %v", err)
 		exceptionManager.AddError("", exceptionManager.GENERIC_ERROR, "", exceptionManager.GENERIC_ERROR)
@@ -96,4 +96,14 @@ func Start(project_path string, language string, start time.Time) output.Output 
 
 	// Return the analysis results
 	return outputGenerator.SuccessOutput(data, analysisStats, output.AnalysisInfo{}, start)
+}
+
+// readInDir reads name without leaving dir.
+func readInDir(dir, name string) ([]byte, error) {
+	root, err := os.OpenRoot(dir)
+	if err != nil {
+		return nil, err
+	}
+	defer root.Close()
+	return root.ReadFile(name)
 }
